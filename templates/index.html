@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная - Система ВТД Газпром</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+        }
+        
+        /* Шапка */
+        .header {
+            background: linear-gradient(135deg, #003366 0%, #0055a5 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 48px;
+        }
+        
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 18px;
+            border-radius: 30px;
+        }
+        
+        /* Навигация */
+        .nav {
+            background: white;
+            border-bottom: 3px solid #003366;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            padding: 15px 0;
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-link:hover {
+            color: #003366;
+            border-bottom-color: #003366;
+        }
+        
+        .nav-link.active {
+            color: #003366;
+            border-bottom-color: #003366;
+        }
+        
+        /* Контейнер */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+        
+        /* Приветствие */
+        .welcome {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4eaf1 100%);
+            border-radius: 12px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #003366;
+        }
+        
+        .welcome h2 {
+            color: #003366;
+            margin-bottom: 10px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .badge-admin {
+            background: #003366;
+            color: white;
+        }
+        
+        .badge-user {
+            background: #27ae60;
+            color: white;
+        }
+        
+        /* Карточки статистики */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+            border-left: 4px solid;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .stat-number {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #95a5a6;
+        }
+        
+        .card-pipeline { border-left-color: #003366; }
+        .card-pipeline .stat-number { color: #003366; }
+        
+        .card-total { border-left-color: #3498db; }
+        .card-total .stat-number { color: #3498db; }
+        
+        .card-critical { border-left-color: #e74c3c; }
+        .card-critical .stat-number { color: #e74c3c; }
+        
+        .card-high { border-left-color: #e67e22; }
+        .card-high .stat-number { color: #e67e22; }
+        
+        /* Панель действий */
+        .actions-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .actions-panel h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .buttons-grid {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background: #003366;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #002244;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+        
+        .btn-info {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: #e67e22;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        /* Инфо панель */
+        .info-panel {
+            background: #e8f4f8;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid #003366;
+        }
+        
+        .info-panel h3 {
+            color: #003366;
+            margin-bottom: 15px;
+        }
+        
+        .info-panel ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-panel li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .info-panel li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        /* Футер */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .buttons-grid {
+                flex-direction: column;
+            }
+            .header-container {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🏭</div>
+                <div class="logo-text">
+                    <h1>ПАО «Газпром»</h1>
+                    <p>Система внутритрубной диагностики</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <span>👤 {{ current_user.username }}</span>
+                <span class="badge {% if is_admin %}badge-admin{% else %}badge-user{% endif %}">
+                    {% if is_admin %}👑 Администратор{% else %}📋 Пользователь{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-link active">📊 Главная</a>
+            <a href="/defects" class="nav-link">🔍 Дефекты</a>
+            <a href="/report" class="nav-link">📄 Отчеты</a>
+            <a href="/logout" class="nav-link" style="margin-left: auto;">🚪 Выход</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="welcome">
+            <h2>Добро пожаловать, {{ current_user.username }}!</h2>
+            <p>Система мониторинга внутритрубной диагностики ПАО «Газпром» готова к работе.</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card card-pipeline">
+                <h3>ТРУБОПРОВОДЫ</h3>
+                <div class="stat-number">{{ pipelines|length }}</div>
+                <div class="stat-label">всего в системе</div>
+            </div>
+            <div class="stat-card card-total">
+                <h3>ВСЕГО ДЕФЕКТОВ</h3>
+                <div class="stat-number">{{ defects_count }}</div>
+                <div class="stat-label">выявлено</div>
+            </div>
+            <div class="stat-card card-critical">
+                <h3>КРИТИЧЕСКИЕ</h3>
+                <div class="stat-number">{{ risk_stats.critical }}</div>
+                <div class="stat-label">требуют срочного ремонта</div>
+            </div>
+            <div class="stat-card card-high">
+                <h3>ВЫСОКИЙ РИСК</h3>
+                <div class="stat-number">{{ risk_stats.high }}</div>
+                <div class="stat-label">плановый ремонт</div>
+            </div>
+        </div>
+        
+        <div class="actions-panel">
+            <h2>⚡ Оперативные действия</h2>
+            <div class="buttons-grid">
+                {% if is_admin %}
+                <a href="/upload" class="btn btn-primary">📤 Загрузить данные ВТД</a>
+                <a href="/pipelines" class="btn btn-primary">📏 Управление трубопроводами</a>
+                {% endif %}
+                <a href="/defects" class="btn btn-info">🔍 Просмотреть дефекты</a>
+                <a href="/report" class="btn btn-success">📄 Сформировать отчет</a>
+                {% if is_admin %}
+                <a href="/admin" class="btn btn-warning">⚙️ Админ-панель</a>
+                {% endif %}
+                <a href="/logout" class="btn btn-danger">🚪 Выход</a>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3>ℹ️ О системе</h3>
+            <ul>
+                <li>Автоматический анализ дефектов трубопровода</li>
+                <li>Оценка рисков по методике ПАО «Газпром»</li>
+                <li>Формирование рекомендаций по ремонту</li>
+                <li>Визуализация состояния трубопроводной системы</li>
+                <li>Экспорт отчетов для технической документации</li>
+                {% if is_admin %}
+                <li>Полный доступ к управлению данными (Администратор)</li>
+                {% else %}
+                <li>Доступ к просмотру и формированию отчетов (Пользователь)</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2024 ПАО «Газпром» - Система мониторинга внутритрубной диагностики</p>
+        <p style="font-size: 12px; margin-top: 10px;">Дипломный проект - Информационная система анализа данных ВТД</p>
+    </div>
+</body>
+</html>

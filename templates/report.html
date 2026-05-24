@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчет - Система ВТД Газпром</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #003366 0%, #0055a5 100%);
+            color: white;
+            padding: 20px 0;
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { font-size: 48px; }
+        .logo-text h1 { font-size: 24px; }
+        .logo-text p { font-size: 12px; opacity: 0.8; }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 18px;
+            border-radius: 30px;
+        }
+        
+        .badge-admin { background: #003366; color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; }
+        .badge-user { background: #27ae60; color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; }
+        
+        .nav {
+            background: white;
+            border-bottom: 3px solid #003366;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            padding: 15px 0;
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: #003366;
+            border-bottom-color: #003366;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        .action-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary { background: #003366; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        
+        .report-container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .report-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #003366;
+        }
+        
+        .report-header h1 { color: #003366; font-size: 28px; margin-bottom: 10px; }
+        .report-header h2 { color: #2c3e50; font-size: 20px; margin-bottom: 15px; }
+        
+        .report-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .summary {
+            background: #e8f4f8;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #003366;
+        }
+        
+        .summary h3 { color: #003366; margin-bottom: 15px; }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .summary-item { text-align: center; }
+        .summary-label { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .summary-value { font-size: 28px; font-weight: bold; }
+        .summary-value.critical { color: #dc3545; }
+        .summary-value.high { color: #fd7e14; }
+        .summary-value.medium { color: #ffc107; }
+        .summary-value.low { color: #28a745; }
+        
+        .table-container { overflow-x: auto; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { background: #003366; color: white; padding: 12px; text-align: left; }
+        td { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; }
+        tr:hover { background: #f8f9fa; }
+        
+        .risk-critical { background: #dc3545; color: white; padding: 4px 10px; border-radius: 15px; display: inline-block; font-size: 12px; }
+        .risk-high { background: #fd7e14; color: white; padding: 4px 10px; border-radius: 15px; display: inline-block; font-size: 12px; }
+        .risk-medium { background: #ffc107; color: #333; padding: 4px 10px; border-radius: 15px; display: inline-block; font-size: 12px; }
+        .risk-low { background: #28a745; color: white; padding: 4px 10px; border-radius: 15px; display: inline-block; font-size: 12px; }
+        
+        .report-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .signature {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature-line { margin-top: 40px; width: 250px; border-top: 1px solid #333; text-align: center; padding-top: 5px; }
+        
+        .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 12px; }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 50px;
+        }
+        
+        @media print {
+            .header, .nav, .action-bar, .footer { display: none; }
+            .report-container { padding: 20px; box-shadow: none; }
+            .risk-critical, .risk-high, .risk-medium, .risk-low { print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header no-print">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🏭</div>
+                <div class="logo-text">
+                    <h1>ПАО «Газпром»</h1>
+                    <p>Система внутритрубной диагностики</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <span>👤 {{ current_user.username }}</span>
+                <span class="{% if is_admin %}badge-admin{% else %}badge-user{% endif %}">
+                    {% if is_admin %}👑 Администратор{% else %}📋 Пользователь{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="nav no-print">
+        <div class="nav-container">
+            <a href="/" class="nav-link">📊 Главная</a>
+            <a href="/defects" class="nav-link">🔍 Дефекты</a>
+            <a href="/report" class="nav-link active">📄 Отчеты</a>
+            <a href="/logout" class="nav-link" style="margin-left: auto;">🚪 Выход</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="action-bar no-print">
+            <button onclick="window.print()" class="btn btn-primary">🖨 Печать отчета</button>
+        </div>
+        
+        <div class="report-container" id="reportContent">
+            <div class="report-header">
+                <h1>ПАО «Газпром»</h1>
+                <h2>Технический отчёт по внутритрубной диагностике</h2>
+                <div class="report-meta">
+                    <div><strong>Объект:</strong> {{ pipeline.name if pipeline else 'Газопровод' }}</div>
+                    <div><strong>Дата формирования:</strong> <span id="reportDate"></span></div>
+                </div>
+            </div>
+            
+            {% if defects %}
+            <div class="summary">
+                <h3>📊 Сводка результатов диагностики</h3>
+                <div class="summary-stats">
+                    <div class="summary-item">
+                        <div class="summary-label">Всего дефектов</div>
+                        <div class="summary-value">{{ defects|length }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Критические</div>
+                        <div class="summary-value critical">{{ defects|selectattr('risk_level', 'equalto', 'КРИТИЧЕСКИЙ')|list|length }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Высокий риск</div>
+                        <div class="summary-value high">{{ defects|selectattr('risk_level', 'equalto', 'ВЫСОКИЙ')|list|length }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Средний риск</div>
+                        <div class="summary-value medium">{{ defects|selectattr('risk_level', 'equalto', 'СРЕДНИЙ')|list|length }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>№</th><th>Км</th><th>Тип</th><th>Глубина</th><th>Длина</th><th>Риск</th><th>Рекомендация</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for d in defects %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ d.km }}</td>
+                            <td>{{ d.defect_type }}</td>
+                            <td>{{ d.depth_mm }} мм</td>
+                            <td>{{ d.length_mm }} мм</td>
+                            <td><span class="risk-{{ d.risk_level|lower }}">{{ d.risk_level }}</span></td>
+                            <td>{{ d.recommendation }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="report-footer">
+                <p>Документ сформирован автоматически информационной системой внутритрубной диагностики.</p>
+            </div>
+            
+            <div class="signature">
+                <div><div class="signature-line">Начальник отдела диагностики</div></div>
+                <div><div class="signature-line">Ответственный исполнитель</div></div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <h3>📭 Нет данных для формирования отчета</h3>
+                <p>Загрузите данные диагностики через раздел "Загрузка данных"</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="footer no-print">
+        <p>© 2024 ПАО «Газпром» - Система мониторинга внутритрубной диагностики</p>
+    </div>
+    
+    <script>
+        document.getElementById('reportDate').innerHTML = new Date().toLocaleDateString('ru-RU', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+    </script>
+</body>
+</html>

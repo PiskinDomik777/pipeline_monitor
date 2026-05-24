@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дефекты - Система ВТД Газпром</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #003366 0%, #0055a5 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon { font-size: 48px; }
+        .logo-text h1 { font-size: 24px; margin-bottom: 5px; }
+        .logo-text p { font-size: 12px; opacity: 0.8; }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 18px;
+            border-radius: 30px;
+        }
+        
+        .badge-admin { background: #003366; color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; }
+        .badge-user { background: #27ae60; color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; }
+        
+        .nav {
+            background: white;
+            border-bottom: 3px solid #003366;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            padding: 15px 0;
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: #003366;
+            border-bottom-color: #003366;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-header h1 { font-size: 28px; color: #003366; }
+        
+        .stats-badge {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        
+        .stats-badge span { font-size: 24px; font-weight: bold; color: #003366; }
+        
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label { font-size: 12px; color: #666; font-weight: 600; }
+        .filter-group select, .filter-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .btn-outline {
+            border: 2px solid #003366;
+            color: #003366;
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        
+        th {
+            background: #003366;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        td { padding: 12px 15px; border-bottom: 1px solid #e0e0e0; }
+        tr:hover { background: #f8f9fa; }
+        
+        .risk-critical { background: #dc3545; color: white; padding: 5px 12px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: bold; min-width: 90px; text-align: center; }
+        .risk-high { background: #fd7e14; color: white; padding: 5px 12px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: bold; min-width: 90px; text-align: center; }
+        .risk-medium { background: #ffc107; color: #333; padding: 5px 12px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: bold; min-width: 90px; text-align: center; }
+        .risk-low { background: #28a745; color: white; padding: 5px 12px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: bold; min-width: 90px; text-align: center; }
+        
+        .defect-type { display: flex; align-items: center; gap: 8px; }
+        .defect-icon { font-size: 20px; }
+        
+        .btn-action {
+            padding: 5px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 12px;
+            display: inline-block;
+            margin: 0 3px;
+        }
+        .btn-edit { background: #ffc107; color: #333; }
+        .btn-delete { background: #dc3545; color: white; }
+        
+        .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 12px; }
+        .empty-state h3 { color: #666; margin-bottom: 15px; }
+        .empty-state p { color: #999; margin-bottom: 20px; }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; align-items: flex-start; }
+            th, td { font-size: 12px; padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🏭</div>
+                <div class="logo-text">
+                    <h1>ПАО «Газпром»</h1>
+                    <p>Система внутритрубной диагностики</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <span>👤 {{ current_user.username }}</span>
+                <span class="{% if is_admin %}badge-admin{% else %}badge-user{% endif %}">
+                    {% if is_admin %}👑 Администратор{% else %}📋 Пользователь{% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-link">📊 Главная</a>
+            <a href="/defects" class="nav-link active">🔍 Дефекты</a>
+            <a href="/report" class="nav-link">📄 Отчеты</a>
+            <a href="/logout" class="nav-link" style="margin-left: auto;">🚪 Выход</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1>🔍 Реестр дефектов трубопровода</h1>
+            <div class="stats-badge">
+                Всего дефектов: <span>{{ defects|length }}</span>
+            </div>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label>Тип дефекта</label>
+                <select id="typeFilter" onchange="filterTable()">
+                    <option value="all">Все типы</option>
+                    <option value="коррозия">Коррозия</option>
+                    <option value="трещина">Трещина</option>
+                    <option value="вмятина">Вмятина</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Уровень риска</label>
+                <select id="riskFilter" onchange="filterTable()">
+                    <option value="all">Все уровни</option>
+                    <option value="КРИТИЧЕСКИЙ">Критический</option>
+                    <option value="ВЫСОКИЙ">Высокий</option>
+                    <option value="СРЕДНИЙ">Средний</option>
+                    <option value="НИЗКИЙ">Низкий</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Поиск по км</label>
+                <input type="text" id="kmSearch" placeholder="Например: 12.5" onkeyup="filterTable()">
+            </div>
+            <div class="filter-group">
+                <label>&nbsp;</label>
+                <button class="btn-outline" onclick="resetFilters()">Сбросить фильтры</button>
+            </div>
+        </div>
+        
+        {% if defects %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Километр</th>
+                        <th>Тип дефекта</th>
+                        <th>Глубина (мм)</th>
+                        <th>Длина (мм)</th>
+                        <th>Уровень риска</th>
+                        <th>Рекомендация</th>
+                        {% if is_admin %}<th>Действия</th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody id="defectsTable">
+                    {% for d in defects %}
+                    <tr data-type="{{ d.defect_type }}" data-risk="{{ d.risk_level }}" data-km="{{ d.km }}">
+                        <td><strong>{{ d.km }}</strong> км</td>
+                        <td>
+                            <div class="defect-type">
+                                <span class="defect-icon">
+                                    {% if d.defect_type == 'коррозия' %}🔴
+                                    {% elif d.defect_type == 'трещина' %}⚡
+                                    {% elif d.defect_type == 'вмятина' %}💥
+                                    {% else %}⚠️
+                                    {% endif %}
+                                </span>
+                                {{ d.defect_type }}
+                            </div>
+                        </td>
+                        <td>{{ d.depth_mm }}</td>
+                        <td>{{ d.length_mm }}</td>
+                        <td>
+                            <span class="risk-{{ d.risk_level|lower }}">
+                                {% if d.risk_level == 'КРИТИЧЕСКИЙ' %}🔴 КРИТИЧЕСКИЙ
+                                {% elif d.risk_level == 'ВЫСОКИЙ' %}🟠 ВЫСОКИЙ
+                                {% elif d.risk_level == 'СРЕДНИЙ' %}🟡 СРЕДНИЙ
+                                {% else %}🟢 НИЗКИЙ
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td style="font-size: 13px;">{{ d.recommendation }}</td>
+                        {% if is_admin %}
+                        <td>
+                            <a href="/defects/edit/{{ d.id }}" class="btn-action btn-edit">✏️ Ред.</a>
+                            <a href="/defects/delete/{{ d.id }}" class="btn-action btn-delete" onclick="return confirm('Удалить дефект?')">🗑️ Уд.</a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h3>📭 Нет загруженных дефектов</h3>
+            <p>Загрузите данные диагностики через раздел "Загрузка данных"</p>
+            {% if is_admin %}
+            <a href="/upload" class="btn" style="background: #003366; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none;">📤 Загрузить данные</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="footer">
+        <p>© 2024 ПАО «Газпром» - Система мониторинга внутритрубной диагностики</p>
+    </div>
+    
+    <script>
+        function filterTable() {
+            const typeFilter = document.getElementById('typeFilter').value;
+            const riskFilter = document.getElementById('riskFilter').value;
+            const kmSearch = document.getElementById('kmSearch').value.toLowerCase();
+            
+            const rows = document.querySelectorAll('#defectsTable tr');
+            
+            rows.forEach(row => {
+                const defectType = row.getAttribute('data-type');
+                const riskLevel = row.getAttribute('data-risk');
+                const km = row.getAttribute('data-km');
+                
+                let show = true;
+                if (typeFilter !== 'all' && defectType !== typeFilter) show = false;
+                if (riskFilter !== 'all' && riskLevel !== riskFilter) show = false;
+                if (kmSearch && !km.toString().includes(kmSearch)) show = false;
+                
+                row.style.display = show ? '' : 'none';
+            });
+        }
+        
+        function resetFilters() {
+            document.getElementById('typeFilter').value = 'all';
+            document.getElementById('riskFilter').value = 'all';
+            document.getElementById('kmSearch').value = '';
+            filterTable();
+        }
+    </script>
+</body>
+</html>

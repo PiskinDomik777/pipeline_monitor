@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить трубопровод - ВТД Газпром</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f7fa; }
+        
+        .header { background: linear-gradient(135deg, #003366 0%, #0055a5 100%); color: white; padding: 20px 0; }
+        .header-container { max-width: 1400px; margin: 0 auto; padding: 0 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { font-size: 48px; }
+        .logo-text h1 { font-size: 24px; }
+        
+        .user-info { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.15); padding: 8px 18px; border-radius: 30px; }
+        .badge-admin { background: #003366; color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; }
+        
+        .nav { background: white; border-bottom: 3px solid #003366; }
+        .nav-container { max-width: 1400px; margin: 0 auto; padding: 0 30px; display: flex; gap: 30px; }
+        .nav-link { padding: 15px 0; color: #2c3e50; text-decoration: none; font-weight: 500; border-bottom: 3px solid transparent; }
+        .nav-link:hover { color: #003366; border-bottom-color: #003366; }
+        
+        .container { max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 12px; padding: 35px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .card h1 { color: #003366; margin-bottom: 25px; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; }
+        input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+        input:focus { outline: none; border-color: #003366; }
+        
+        .btn-save { background: #27ae60; color: white; padding: 12px 25px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
+        .btn-cancel { background: #95a5a6; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; margin-left: 10px; display: inline-block; }
+        
+        .footer { background: #2c3e50; color: white; text-align: center; padding: 25px; margin-top: 50px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🏭</div>
+                <div class="logo-text"><h1>ПАО «Газпром»</h1><p>Система внутритрубной диагностики</p></div>
+            </div>
+            <div class="user-info">
+                <span>👤 {{ current_user.username }}</span>
+                <span class="badge-admin">👑 Администратор</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-link">📊 Главная</a>
+            <a href="/defects" class="nav-link">🔍 Дефекты</a>
+            <a href="/report" class="nav-link">📄 Отчеты</a>
+            <a href="/logout" class="nav-link" style="margin-left: auto;">🚪 Выход</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h1>➕ Новый трубопровод</h1>
+            <form method="POST">
+                <div class="form-group">
+                    <label>Название трубопровода</label>
+                    <input type="text" name="name" required placeholder="Пример: Газопровод 'Сила Сибири'">
+                </div>
+                <div class="form-group">
+                    <label>Протяженность (км)</label>
+                    <input type="number" step="0.1" name="length_km" required placeholder="0.0">
+                </div>
+                <button type="submit" class="btn-save">💾 Сохранить</button>
+                <a href="/pipelines" class="btn-cancel">❌ Отмена</a>
+            </form>
+        </div>
+    </div>
+    
+    <div class="footer"><p>© 2024 ПАО «Газпром» - Система мониторинга внутритрубной диагностики</p></div>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование дефекта - ВТД Газпром</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #003366 0%, #0055a5 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon { font-size: 48px; }
+        .logo-text h1 { font-size: 24px; }
+        .logo-text p { font-size: 12px; opacity: 0.8; }
+        
+        .nav {
+            background: white;
+            border-bottom: 3px solid #003366;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-link {
+            padding: 15px 0;
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-link:hover {
+            color: #003366;
+            border-bottom-color: #003366;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .card h1 {
+            color: #003366;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .card-subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #003366;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .btn-save {
+            background: #27ae60;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .btn-save:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+        
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.2s;
+        }
+        
+        .btn-cancel:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🏭</div>
+                <div class="logo-text">
+                    <h1>ПАО «Газпром»</h1>
+                    <p>Система внутритрубной диагностики</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="nav">
+        <div class="nav-container">
+            <a href="/" class="nav-link">📊 Главная</a>
+            <a href="/defects" class="nav-link">🔍 Дефекты</a>
+            <a href="/report" class="nav-link">📄 Отчеты</a>
+            <a href="/logout" class="nav-link">🚪 Выход</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h1>✏️ Редактирование дефекта</h1>
+            <div class="card-subtitle">Изменение параметров выявленного дефекта</div>
+            
+            <form method="POST">
+                <div class="form-group">
+                    <label>📍 Километр трассы</label>
+                    <input type="number" step="0.1" name="km" value="{{ defect.km }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>🔧 Тип дефекта</label>
+                    <select name="defect_type">
+                        <option value="коррозия" {% if defect.defect_type == 'коррозия' %}selected{% endif %}>🔴 Коррозия</option>
+                        <option value="трещина" {% if defect.defect_type == 'трещина' %}selected{% endif %}>⚡ Трещина</option>
+                        <option value="вмятина" {% if defect.defect_type == 'вмятина' %}selected{% endif %}>💥 Вмятина</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>📏 Глубина (мм)</label>
+                    <input type="number" step="0.1" name="depth_mm" value="{{ defect.depth_mm }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>📐 Длина (мм)</label>
+                    <input type="number" step="0.1" name="length_mm" value="{{ defect.length_mm }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>⚠️ Уровень риска</label>
+                    <select name="risk_level">
+                        <option value="КРИТИЧЕСКИЙ" {% if defect.risk_level == 'КРИТИЧЕСКИЙ' %}selected{% endif %}>🔴 КРИТИЧЕСКИЙ</option>
+                        <option value="ВЫСОКИЙ" {% if defect.risk_level == 'ВЫСОКИЙ' %}selected{% endif %}>🟠 ВЫСОКИЙ</option>
+                        <option value="СРЕДНИЙ" {% if defect.risk_level == 'СРЕДНИЙ' %}selected{% endif %}>🟡 СРЕДНИЙ</option>
+                        <option value="НИЗКИЙ" {% if defect.risk_level == 'НИЗКИЙ' %}selected{% endif %}>🟢 НИЗКИЙ</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>💡 Рекомендация</label>
+                    <input type="text" name="recommendation" value="{{ defect.recommendation }}" placeholder="Введите рекомендацию по ремонту">
+                </div>
+                
+                <div class="btn-group">
+                    <button type="submit" class="btn-save">💾 Сохранить изменения</button>
+                    <a href="/defects" class="btn-cancel">❌ Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2024 ПАО «Газпром» - Система мониторинга внутритрубной диагностики</p>
+    </div>
+</body>
+</html>
