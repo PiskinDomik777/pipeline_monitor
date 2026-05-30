@@ -15,13 +15,13 @@ app = Flask(__name__)
 
 # Конфигурация
 app.config['SECRET_KEY'] = 'gazprom-super-secret-key-2024'
-# ЗАМЕНИТЕ НА ВАШ ПАРОЛЬ ОТ MySQL
+# Подключение к MySQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://ISPr25-24_LinkovNI:ISPr25-24_LinkovNI@cfif31.ru:3306/ISPr25-24_LinkovNI_pipeline_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-# Login Manager
+# Логин
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -31,7 +31,7 @@ login_manager.login_message = 'Пожалуйста, войдите в сист�
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# ========== АДМИН-ПАНЕЛЬ ==========
+# Админ панель
 class AdminModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin()
@@ -39,12 +39,12 @@ class AdminModelView(ModelView):
     def inaccessible_callback(self, name, **kwargs):
         return redirect('/login')
 
-# Убрал template_mode - он не поддерживается в вашей версии
+
 admin = Admin(app, name='ВТД Админ')
 admin.add_view(AdminModelView(Pipeline, db.session))
 admin.add_view(AdminModelView(Defect, db.session))
 admin.add_view(AdminModelView(User, db.session))
-# ==================================
+
 
 # Настройки загрузки
 UPLOAD_FOLDER = 'uploads'
@@ -81,7 +81,7 @@ with app.app_context():
         db.session.commit()
         print("✅ Созданы тестовые трубопроводы")
 
-# ==================== АВТОРИЗАЦИЯ ====================
+# Авторизация
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -99,7 +99,7 @@ def login():
         else:
             flash('Неверное имя пользователя или пароль', 'danger')
     
-    return render_template('login.html')
+    return render_template('loginЫ.html')
 
 @app.route('/logout')
 @login_required
@@ -108,7 +108,7 @@ def logout():
     flash('Вы вышли из системы', 'info')
     return redirect(url_for('login'))
 
-# ==================== ОСНОВНЫЕ МАРШРУТЫ ====================
+
 @app.route('/')
 @login_required
 def index():
