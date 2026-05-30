@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 # Конфигурация
 app.config['SECRET_KEY'] = 'gazprom-super-secret-key-2024'
-# ЗАМЕНИТЕ НА ВАШ ПАРОЛЬ ОТ MySQL
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://ISPr25-24_LinkovNI:ISPr25-24_LinkovNI@cfif31.ru:3306/ISPr25-24_LinkovNI_pipeline_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
