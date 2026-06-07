@@ -318,17 +318,93 @@
             margin-top: 50px;
         }
         
+        /* ========== МОБИЛЬНАЯ АДАПТАЦИЯ ========== */
         @media (max-width: 768px) {
+            /* Шапка */
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            /* Навигация */
+            .nav-container {
+                justify-content: center;
+                gap: 15px;
+                padding: 0 15px;
+            }
+            
+            .nav-link {
+                padding: 10px 0;
+                font-size: 14px;
+            }
+            
+            /* Статистика (4 карточки → 2x2) */
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
             }
+            
+            .stat-card {
+                padding: 15px;
+            }
+            
+            .stat-number {
+                font-size: 28px;
+            }
+            
+            /* Кнопки */
             .buttons-grid {
                 flex-direction: column;
             }
+            
+            .btn {
+                justify-content: center;
+                width: 100%;
+            }
+            
+            /* Контейнер */
+            .container {
+                padding: 20px 15px;
+            }
+            
+            /* Приветствие */
+            .welcome {
+                padding: 15px;
+            }
+            
+            .welcome h2 {
+                font-size: 18px;
+            }
+            
+            /* Инфо-панель */
+            .info-panel {
+                padding: 15px;
+            }
+            
+            .info-panel li {
+                font-size: 13px;
+            }
+            
+            /* Футер */
+            .footer {
+                padding: 15px;
+                font-size: 12px;
+            }
+        }
+        
+        /* Планшеты */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
             .header-container {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
+                flex-direction: row;
             }
         }
     </style>
@@ -357,6 +433,7 @@
             <a href="/" class="nav-link active">📊 Главная</a>
             <a href="/defects" class="nav-link">🔍 Дефекты</a>
             <a href="/report" class="nav-link">📄 Отчеты</a>
+            <a href="/profile" class="nav-link">👤 Профиль</a>
             <a href="/logout" class="nav-link" style="margin-left: auto;">🚪 Выход</a>
         </div>
     </div>
@@ -396,12 +473,11 @@
                 {% if is_admin %}
                 <a href="/upload" class="btn btn-primary">📤 Загрузить данные ВТД</a>
                 <a href="/pipelines" class="btn btn-primary">📏 Управление трубопроводами</a>
+                <a href="/admin/users" class="btn btn-primary">👥 Управление пользователями</a>
+                <a href="/admin-panel" class="btn btn-primary">⚙️ Админ-панель</a>
                 {% endif %}
                 <a href="/defects" class="btn btn-info">🔍 Просмотреть дефекты</a>
                 <a href="/report" class="btn btn-success">📄 Сформировать отчет</a>
-                {% if is_admin %}
-                <a href="/admin" class="btn btn-warning">⚙️ Админ-панель</a>
-                {% endif %}
                 <a href="/logout" class="btn btn-danger">🚪 Выход</a>
             </div>
         </div>

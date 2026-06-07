@@ -30,12 +30,7 @@
             flex-wrap: wrap;
         }
         
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
+        .logo { display: flex; align-items: center; gap: 15px; }
         .logo-icon { font-size: 48px; }
         .logo-text h1 { font-size: 24px; margin-bottom: 5px; }
         .logo-text p { font-size: 12px; opacity: 0.8; }
@@ -63,6 +58,7 @@
             padding: 0 30px;
             display: flex;
             gap: 30px;
+            flex-wrap: wrap;
         }
         
         .nav-link {
@@ -189,9 +185,70 @@
             margin-top: 50px;
         }
         
+        /* ========== МОБИЛЬНАЯ АДАПТАЦИЯ ========== */
         @media (max-width: 768px) {
-            .page-header { flex-direction: column; align-items: flex-start; }
-            th, td { font-size: 12px; padding: 8px; }
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            .logo { justify-content: center; }
+            .nav-container {
+                justify-content: center;
+                gap: 15px;
+                padding: 0 15px;
+            }
+            .nav-link {
+                padding: 10px 0;
+                font-size: 14px;
+            }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-group {
+                width: 100%;
+            }
+            .filter-group select, .filter-group input {
+                width: 100%;
+            }
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            table {
+                min-width: 650px;
+                font-size: 12px;
+            }
+            th, td {
+                padding: 8px 10px;
+            }
+            .defect-type {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 3px;
+            }
+            .btn-action {
+                padding: 4px 8px;
+                font-size: 11px;
+            }
+            .container {
+                padding: 15px;
+            }
+            .footer {
+                padding: 15px;
+                font-size: 12px;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -219,6 +276,7 @@
             <a href="/" class="nav-link">📊 Главная</a>
             <a href="/defects" class="nav-link active">🔍 Дефекты</a>
             <a href="/report" class="nav-link">📄 Отчеты</a>
+            <a href="/profile" class="nav-link">👤 Профиль</a>
             <a href="/logout" class="nav-link" style="margin-left: auto;">🚪 Выход</a>
         </div>
     </div>

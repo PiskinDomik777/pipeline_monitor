@@ -6,12 +6,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 db = SQLAlchemy()
 
 class User(UserMixin, db.Model):
-    """Модель пользователя"""
+    __tablename__ = 'user'
+    
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default='user')  # 'admin' или 'user'
+    role = db.Column(db.String(20), nullable=False, default='viewer')  
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def set_password(self, password):
@@ -22,6 +23,12 @@ class User(UserMixin, db.Model):
     
     def is_admin(self):
         return self.role == 'admin'
+    
+    def is_user(self):
+        return self.role == 'user'
+    
+    def is_viewer(self):
+        return self.role == 'viewer'
 
 class Pipeline(db.Model):
     """Модель трубопровода"""

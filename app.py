@@ -6,10 +6,15 @@ import pandas as pd
 import os
 from werkzeug.utils import secure_filename
 from werkzeug.utils import redirect
+from werkzeug.security import generate_password_hash
+from datetime import datetime
+from flask import send_file
 
 # Импорт для админ-панели
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.base import AdminIndexView 
+from flask_admin.menu import MenuLink 
 
 app = Flask(__name__)
 
@@ -32,6 +37,7 @@ def load_user(user_id):
 
 # Админ панель
 class AdminModelView(ModelView):
+    
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin()
     
@@ -40,19 +46,13 @@ class AdminModelView(ModelView):
 
 
 admin = Admin(app, name='ВТД Админ')
-admin.add_view(AdminModelView(Pipeline, db.session))
-admin.add_view(AdminModelView(Defect, db.session))
-admin.add_view(AdminModelView(User, db.session))
 
+admin.add_view(AdminModelView(Pipeline, db))
+admin.add_view(AdminModelView(Defect, db))
+admin.add_view(AdminModelView(User, db))
 
-# Настройки загрузки
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'csv'}
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+from flask_admin.menu import MenuLink
+admin.add_link(MenuLink(name='← На главный сайт', url='/'))
 
 # Создание таблиц и тестовых данных
 with app.app_context():
@@ -98,7 +98,44 @@ def login():
         else:
             flash('Неверное имя пользователя или пароль', 'danger')
     
-    return render_template('loginЫ.html')
+    return render_template('login.html')
+
+@app.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    """Личный кабинет пользователя"""
+    from werkzeug.utils import secure_filename
+    from PIL import Image
+    
+    if request.method == 'POST':
+        new_username = request.form.get('username')
+        if new_username and new_username != current_user.username:
+            existing_user = User.query.filter_by(username=new_username).first()
+            if existing_user:
+                flash('Пользователь с таким именем уже существует', 'danger')
+            else:
+                current_user.username = new_username
+                flash('Имя пользователя обновлено', 'success')
+        
+        old_password = request.form.get('old_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if old_password and new_password:
+            if not current_user.check_password(old_password):
+                flash('Неверный текущий пароль', 'danger')
+            elif new_password != confirm_password:
+                flash('Новый пароль и подтверждение не совпадают', 'danger')
+            elif len(new_password) < 4:
+                flash('Пароль должен содержать минимум 4 символа', 'danger')
+            else:
+                current_user.set_password(new_password)
+                flash('Пароль успешно изменён', 'success')
+        
+        db.session.commit()
+        return redirect(url_for('profile'))
+    
+    return render_template('profile.html', user=current_user, is_admin=current_user.is_admin())
 
 @app.route('/logout')
 @login_required
@@ -123,7 +160,103 @@ def index():
                          pipelines=pipelines,
                          defects_count=defects_count,
                          risk_stats=risk_stats,
-                         is_admin=current_user.is_admin())
+                         is_admin=current_user.is_admin(),
+                         is_user=current_user.role == 'user',
+                         is_viewer=current_user.role == 'viewer')
+
+# ==================== АДМИН-ПАНЕЛЬ (КАСТОМНАЯ) ====================
+
+@app.route('/admin-panel')
+@login_required
+def admin_panel():
+    if not current_user.is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect(url_for('index'))
+    
+    pipelines_count = Pipeline.query.count()
+    defects_count = Defect.query.count()
+    users_count = User.query.count()
+    users = User.query.all()
+    risk_stats = {
+        'critical': Defect.query.filter_by(risk_level='КРИТИЧЕСКИЙ').count(),
+        'high': Defect.query.filter_by(risk_level='ВЫСОКИЙ').count(),
+        'medium': Defect.query.filter_by(risk_level='СРЕДНИЙ').count(),
+        'low': Defect.query.filter_by(risk_level='НИЗКИЙ').count()
+    }
+    
+    return render_template('admin_panel.html',
+                         pipelines_count=pipelines_count,
+                         defects_count=defects_count,
+                         users_count=users_count,
+                         users=users,
+                         risk_stats=risk_stats)
+
+@app.route('/admin-panel/add-user', methods=['POST'])
+@login_required
+def admin_panel_add_user():
+    if not current_user.is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect(url_for('index'))
+    
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    role = request.form.get('role')
+    
+    existing_user = User.query.filter_by(username=username).first()
+    if existing_user:
+        flash('Пользователь с таким логином уже существует', 'danger')
+        return redirect(url_for('admin_panel'))
+    
+    new_user = User(username=username, email=email, role=role)
+    new_user.set_password(password)
+    db.session.add(new_user)
+    db.session.commit()
+    
+    flash(f'Пользователь {username} создан', 'success')
+    return redirect(url_for('admin_panel'))
+
+@app.route('/admin-panel/delete-user/<int:user_id>')
+@login_required
+def admin_panel_delete_user(user_id):
+    if not current_user.is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    if user.id == current_user.id:
+        flash('Нельзя удалить себя', 'danger')
+        return redirect(url_for('admin_panel'))
+    
+    db.session.delete(user)
+    db.session.commit()
+    flash(f'Пользователь удален', 'success')
+    return redirect(url_for('admin_panel'))
+
+@app.route('/admin-panel/edit-user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def admin_panel_edit_user(user_id):
+    if not current_user.is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        user.username = request.form.get('username')
+        user.email = request.form.get('email')
+        user.role = request.form.get('role')
+        
+        new_password = request.form.get('password')
+        if new_password:
+            user.set_password(new_password)
+        
+        db.session.commit()
+        flash('Пользователь обновлен', 'success')
+        return redirect(url_for('admin_panel'))
+    
+    return render_template('admin_panel_edit.html', user=user)
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
@@ -187,7 +320,11 @@ def upload_data():
 @login_required
 def defects_list():
     defects = Defect.query.order_by(Defect.risk_score.desc()).all()
-    return render_template('defects.html', defects=defects, is_admin=current_user.is_admin())
+    return render_template('defects.html', 
+                         defects=defects, 
+                         is_admin=current_user.is_admin(),
+                         is_user=current_user.role == 'user',
+                         is_viewer=current_user.role == 'viewer')
 
 @app.route('/defects/delete/<int:defect_id>')
 @login_required
@@ -223,7 +360,11 @@ def edit_defect(defect_id):
         flash('Дефект обновлен', 'success')
         return redirect(url_for('defects_list'))
     
-    return render_template('edit_defect.html', defect=defect, is_admin=current_user.is_admin())
+    return render_template('edit_defect.html', 
+                         defect=defect, 
+                         is_admin=current_user.is_admin(),
+                         is_user=current_user.role == 'user',
+                         is_viewer=current_user.role == 'viewer')
 
 @app.route('/pipelines')
 @login_required
@@ -267,12 +408,195 @@ def delete_pipeline(pipeline_id):
     flash('Трубопровод удален', 'success')
     return redirect(url_for('pipelines_list'))
 
+# УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ (АДМИН) 
+@app.route('/admin/users')
+@login_required
+def admin_users():
+    """Страница управления пользователями (только для администратора)"""
+    if not current_user.is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect(url_for('index'))
+    
+    users = User.query.all()
+    return render_template('admin_users.html', users=users, is_admin=current_user.is_admin())
+
+@app.route('/admin/users/add', methods=['GET', 'POST'])
+@login_required
+def admin_add_user():
+    """Добавление нового пользователя (только для администратора)"""
+    if not current_user.is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        role = request.form.get('role')
+        
+        # Проверка на существующего пользователя
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash('Пользователь с таким логином уже существует', 'danger')
+            return redirect(request.url)
+        
+        existing_email = User.query.filter_by(email=email).first()
+        if existing_email:
+            flash('Пользователь с таким email уже существует', 'danger')
+            return redirect(request.url)
+        
+        new_user = User(username=username, email=email, role=role)
+        new_user.set_password(password)
+        db.session.add(new_user)
+        db.session.commit()
+        
+        flash(f'Пользователь {username} успешно создан', 'success')
+        return redirect(url_for('admin_users'))
+    
+    return render_template('admin_add_user.html', is_admin=current_user.is_admin())
+
+@app.route('/admin/users/edit/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def admin_edit_user(user_id):
+    """Редактирование пользователя (только для администратора)"""
+    if not current_user.is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        user.username = request.form.get('username')
+        user.email = request.form.get('email')
+        user.role = request.form.get('role')
+        
+        new_password = request.form.get('password')
+        if new_password:
+            user.set_password(new_password)
+        
+        db.session.commit()
+        flash(f'Пользователь {user.username} обновлен', 'success')
+        return redirect(url_for('admin_users'))
+    
+    return render_template('admin_edit_user.html', user=user, is_admin=current_user.is_admin())
+
+@app.route('/admin/users/delete/<int:user_id>')
+@login_required
+def admin_delete_user(user_id):
+    """Удаление пользователя (только для администратора)"""
+    if not current_user.is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect(url_for('index'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    # Нельзя удалить самого себя
+    if user.id == current_user.id:
+        flash('Нельзя удалить свою учетную запись', 'danger')
+        return redirect(url_for('admin_users'))
+    
+    db.session.delete(user)
+    db.session.commit()
+    flash(f'Пользователь {user.username} удален', 'success')
+    return redirect(url_for('admin_users'))
+
 @app.route('/report')
 @login_required
 def report():
     defects = Defect.query.order_by(Defect.risk_score.desc()).all()
     pipeline = Pipeline.query.first()
-    return render_template('report.html', defects=defects, pipeline=pipeline, is_admin=current_user.is_admin())
+    return render_template('report.html', 
+                         defects=defects, 
+                         pipeline=pipeline, 
+                         is_admin=current_user.is_admin(),
+                         is_user=current_user.role == 'user',
+                         is_viewer=current_user.role == 'viewer')
+
+@app.route('/export/excel')
+@login_required
+def export_excel():
+    """Экспорт всех дефектов в Excel-файл"""
+    import io
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    
+    defects = Defect.query.order_by(Defect.risk_score.desc()).all()
+    pipeline = Pipeline.query.first()
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Дефекты ВТД"
+    
+    header_font = Font(bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="003366", end_color="003366", fill_type="solid")
+    header_alignment = Alignment(horizontal="center", vertical="center")
+    thin_border = Border(
+        left=Side(style='thin'),
+        right=Side(style='thin'),
+        top=Side(style='thin'),
+        bottom=Side(style='thin')
+    )
+    
+    ws.merge_cells('A1:G1')
+    ws['A1'] = f'ПАО "Газпром" - Технический отчёт по внутритрубной диагностике'
+    ws['A1'].font = Font(bold=True, size=14)
+    ws['A1'].alignment = Alignment(horizontal="center")
+    
+    ws.merge_cells('A2:G2')
+    ws['A2'] = f'Объект: {pipeline.name if pipeline else "Газопровод"}'
+    ws['A2'].alignment = Alignment(horizontal="center")
+    
+    ws.merge_cells('A3:G3')
+    ws['A3'] = f'Дата формирования: {datetime.now().strftime("%d.%m.%Y %H:%M")}'
+    ws['A3'].alignment = Alignment(horizontal="center")
+    
+    headers = ['№', 'Километр', 'Тип дефекта', 'Глубина (мм)', 'Длина (мм)', 'Уровень риска', 'Рекомендация']
+    for col, header in enumerate(headers, 1):
+        cell = ws.cell(row=5, column=col, value=header)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_alignment
+        cell.border = thin_border
+    
+    for idx, defect in enumerate(defects, 1):
+        row = 5 + idx
+        ws.cell(row=row, column=1, value=idx).border = thin_border
+        ws.cell(row=row, column=2, value=defect.km).border = thin_border
+        ws.cell(row=row, column=3, value=defect.defect_type).border = thin_border
+        ws.cell(row=row, column=4, value=defect.depth_mm).border = thin_border
+        ws.cell(row=row, column=5, value=defect.length_mm).border = thin_border
+        ws.cell(row=row, column=6, value=defect.risk_level).border = thin_border
+        ws.cell(row=row, column=7, value=defect.recommendation).border = thin_border
+        
+        risk_cell = ws.cell(row=row, column=6)
+        if defect.risk_level == 'КРИТИЧЕСКИЙ':
+            risk_cell.fill = PatternFill(start_color="DC3545", end_color="DC3545", fill_type="solid")
+            risk_cell.font = Font(color="FFFFFF", bold=True)
+        elif defect.risk_level == 'ВЫСОКИЙ':
+            risk_cell.fill = PatternFill(start_color="FD7E14", end_color="FD7E14", fill_type="solid")
+            risk_cell.font = Font(color="FFFFFF", bold=True)
+        elif defect.risk_level == 'СРЕДНИЙ':
+            risk_cell.fill = PatternFill(start_color="FFC107", end_color="FFC107", fill_type="solid")
+        elif defect.risk_level == 'НИЗКИЙ':
+            risk_cell.fill = PatternFill(start_color="28A745", end_color="28A745", fill_type="solid")
+            risk_cell.font = Font(color="FFFFFF", bold=True)
+    
+    for col in range(1, 8):
+        ws.column_dimensions[chr(64 + col)].width = 20
+    
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=f'otchet_vtd_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx',
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
+from datetime import datetime
+from flask import send_file
 
 @app.route('/api/defects')
 @login_required
@@ -281,7 +605,7 @@ def api_defects():
     return jsonify([defect.to_dict() for defect in defects])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='localhost', port=5000)
     import plotly.graph_objs as go
 import plotly.utils
 import json

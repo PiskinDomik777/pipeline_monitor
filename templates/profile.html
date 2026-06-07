@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Загрузка данных - ВТД Газпром</title>
+    <title>Профиль - Система ВТД Газпром</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
             background: #f5f7fa;
             color: #2c3e50;
         }
@@ -74,42 +74,78 @@
         }
         
         .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 0 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
         }
         
-        .card {
+        .profile-card {
             background: white;
             border-radius: 12px;
-            padding: 40px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
         }
         
-        .card h1 { color: #003366; margin-bottom: 10px; }
-        .card-subtitle { color: #7f8c8d; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #e0e0e0; }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
         
-        .form-group { margin-bottom: 25px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; }
-        select, input[type="file"] {
+        .profile-info h2 {
+            color: #003366;
+            margin-bottom: 5px;
+        }
+        
+        .profile-info p {
+            color: #7f8c8d;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input {
             width: 100%;
             padding: 12px;
-            border: 2px solid #ddd;
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #003366;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
             font-size: 14px;
         }
         
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            background: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+        .btn-primary { background: #003366; color: white; }
+        .btn-primary:hover { background: #002244; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-success:hover { background: #229954; }
         
         .alert {
             padding: 12px;
@@ -125,6 +161,17 @@
             text-align: center;
             padding: 25px;
             margin-top: 50px;
+        }
+        
+        hr {
+            margin: 20px 0;
+            border: none;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        h3 {
+            color: #003366;
+            margin-bottom: 20px;
         }
         
         /* ========== МОБИЛЬНАЯ АДАПТАЦИЯ ========== */
@@ -146,22 +193,24 @@
             }
             .container {
                 padding: 15px;
-                margin: 20px auto;
             }
-            .card {
+            .profile-card {
                 padding: 20px;
             }
-            .card h1 {
-                font-size: 22px;
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
             }
-            .form-group select,
+            .profile-info h2 {
+                font-size: 20px;
+            }
             .form-group input {
                 font-size: 14px;
                 padding: 10px;
             }
-            .btn-submit {
-                font-size: 14px;
-                padding: 12px;
+            .btn {
+                width: 100%;
+                text-align: center;
             }
             .footer {
                 padding: 15px;
@@ -181,8 +230,10 @@
                 </div>
             </div>
             <div class="user-info">
-                <span>👤 {{ current_user.username }}</span>
-                <span class="badge-admin">👑 Администратор</span>
+                <span>👤 {{ user.username }}</span>
+                <span class="{% if is_admin %}badge-admin{% else %}badge-user{% endif %}">
+                    {% if is_admin %}👑 Администратор{% else %}📋 Пользователь{% endif %}
+                </span>
             </div>
         </div>
     </div>
@@ -190,43 +241,64 @@
     <div class="nav">
         <div class="nav-container">
             <a href="/" class="nav-link">📊 Главная</a>
-            <a href="/upload" class="nav-link active">📤 Загрузка данных</a>
             <a href="/defects" class="nav-link">🔍 Дефекты</a>
             <a href="/report" class="nav-link">📄 Отчеты</a>
-            <a href="/profile" class="nav-link">👤 Профиль</a>
+            <a href="/profile" class="nav-link active">👤 Профиль</a>
             <a href="/logout" class="nav-link" style="margin-left: auto;">🚪 Выход</a>
         </div>
     </div>
     
     <div class="container">
-        <div class="card">
-            <h1>📂 Загрузка данных внутритрубной диагностики</h1>
-            <div class="card-subtitle">Поддерживаются файлы формата CSV</div>
-            
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-info">
+                    <h2>{{ user.username }}</h2>
+                    <p>{{ user.email }}</p>
+                    <p>Роль: {% if user.role == 'admin' %}👑 Администратор{% elif user.role == 'user' %}📋 Пользователь{% else %}👁️ Наблюдатель{% endif %}</p>
+                    <p>Дата регистрации: {{ user.created_at.strftime('%d.%m.%Y') if user.created_at else '—' }}</p>
+                </div>
+            </div>
             
             <form method="POST" enctype="multipart/form-data">
+                <h3>✏️ Редактирование профиля</h3>
+                
                 <div class="form-group">
-                    <label>Выберите трубопровод</label>
-                    <select name="pipeline_id">
-                        {% for p in pipelines %}
-                        <option value="{{ p.id }}">{{ p.name }} ({{ p.length_km }} км)</option>
-                        {% endfor %}
-                    </select>
+                    <label>👤 Имя пользователя</label>
+                    <input type="text" name="username" value="{{ user.username }}" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">💾 Сохранить изменения</button>
+            </form>
+            
+            <hr>
+            
+            <form method="POST">
+                <h3>🔒 Смена пароля</h3>
+                
+                <div class="form-group">
+                    <label>🔐 Текущий пароль</label>
+                    <input type="password" name="old_password">
                 </div>
                 
                 <div class="form-group">
-                    <label>CSV файл с данными диагностики</label>
-                    <input type="file" name="file" accept=".csv" required>
+                    <label>🔑 Новый пароль</label>
+                    <input type="password" name="new_password">
                 </div>
                 
-                <button type="submit" class="btn-submit">🚀 Загрузить и проанализировать</button>
+                <div class="form-group">
+                    <label>✅ Подтверждение нового пароля</label>
+                    <input type="password" name="confirm_password">
+                </div>
+                
+                <button type="submit" class="btn btn-success">🔄 Сменить пароль</button>
             </form>
         </div>
     </div>

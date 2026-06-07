@@ -1,0 +1,139 @@
+/* static/admin_custom.css - принудительные стили для админ-панели */
+
+/* Общий фон */
+body, .container, .container-fluid {
+    background: #1a1a2e !important;
+}
+
+/* Шапка */
+.navbar, .navbar.navbar-default {
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%) !important;
+    border-bottom: 3px solid #003366 !important;
+}
+
+.navbar-brand, .navbar-brand:hover {
+    color: white !important;
+    font-weight: bold !important;
+}
+
+/* Боковое меню */
+.sidebar, .nav-sidebar, .nav {
+    background: #0d1117 !important;
+}
+
+.nav>li>a {
+    color: #e0e0e0 !important;
+}
+
+.nav>li>a:hover {
+    background: #1f242f !important;
+    color: white !important;
+}
+
+/* Основной контент */
+.content, .main-content, .container-fluid {
+    background: #1a1a2e !important;
+}
+
+/* Карточки */
+.card, .panel, .panel-default {
+    background: #0d1117 !important;
+    border: 1px solid #30363d !important;
+    border-radius: 12px !important;
+}
+
+.card-header, .panel-heading {
+    background: #161b22 !important;
+    border-bottom: 1px solid #30363d !important;
+    color: white !important;
+}
+
+/* Таблицы */
+.table, .table-bordered, .table-striped {
+    background: #0d1117 !important;
+    color: #e0e0e0 !important;
+}
+
+.table th, .table thead th {
+    background: #003366 !important;
+    color: white !important;
+    border: none !important;
+}
+
+.table td {
+    border-bottom: 1px solid #30363d !important;
+    background: #0d1117 !important;
+    color: #e0e0e0 !important;
+}
+
+.table tr:hover td {
+    background: #1f242f !important;
+}
+
+/* Кнопки */
+.btn-primary {
+    background: #003366 !important;
+    border: none !important;
+}
+
+.btn-primary:hover {
+    background: #0055a5 !important;
+}
+
+.btn-success {
+    background: #27ae60 !important;
+    border: none !important;
+}
+
+/* Формы */
+.form-control {
+    background: #0d1117 !important;
+    border: 1px solid #30363d !important;
+    color: #e0e0e0 !important;
+}
+
+.form-control:focus {
+    border-color: #003366 !important;
+    background: #161b22 !important;
+    color: white !important;
+}
+
+label, .control-label {
+    color: #e0e0e0 !important;
+}
+
+/* Пагинация */
+.pagination>li>a, .pagination>li>span {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+    color: #e0e0e0 !important;
+}
+
+.pagination>.active>a, .pagination>.active>span {
+    background: #003366 !important;
+    border-color: #003366 !important;
+}
+
+/* Фильтры */
+.filters .form-control {
+    background: #0d1117 !important;
+    border-color: #30363d !important;
+}
+
+/* Выпадающие списки */
+select, select.form-control {
+    background: #0d1117 !important;
+    color: #e0e0e0 !important;
+}
+
+option {
+    background: #0d1117 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Футер */
+footer, .footer {
+    background: #0d1117 !important;
+    color: #8b949e !important;
+    border-top: 1px solid #30363d !important;
+}

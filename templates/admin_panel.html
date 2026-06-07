@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - ВТД Газпром</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+        }
+        
+        /* Шапка */
+        .header {
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: white;
+            padding: 20px 0;
+            border-bottom: 3px solid #003366;
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon { font-size: 48px; }
+        .logo-text h1 { font-size: 24px; }
+        .logo-text p { font-size: 12px; opacity: 0.8; }
+        
+        /* Навигация */
+        .nav {
+            background: #0d1117;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            padding: 15px 0;
+            color: #e0e0e0;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: #0055a5;
+            border-bottom-color: #003366;
+        }
+        
+        /* Контейнер */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        /* Карточки статистики */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid #003366;
+        }
+        
+        .stat-card h3 {
+            font-size: 14px;
+            color: #8b949e;
+            margin-bottom: 10px;
+        }
+        
+        .stat-number {
+            font-size: 42px;
+            font-weight: 700;
+            color: #0055a5;
+        }
+        
+        /* Таблицы */
+        .table-container {
+            background: #0d1117;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #003366;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        tr:hover {
+            background: #1f242f;
+        }
+        
+        /* Кнопки */
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        
+        .btn-primary { background: #003366; color: white; }
+        .btn-primary:hover { background: #0055a5; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-warning { background: #e67e22; color: white; }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .role-admin { background: #dc3545; color: white; }
+        .role-user { background: #27ae60; color: white; }
+        .role-viewer { background: #3498db; color: white; }
+        
+        /* Формы */
+        .form-card {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #e0e0e0;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background: #1a1a2e;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #e0e0e0;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #003366;
+        }
+        
+        /* Футер */
+        .footer {
+            background: #0d1117;
+            text-align: center;
+            padding: 25px;
+            color: #8b949e;
+            border-top: 1px solid #30363d;
+            margin-top: 50px;
+        }
+        
+        /* ========== МОБИЛЬНАЯ АДАПТАЦИЯ ========== */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            .logo {
+                justify-content: center;
+            }
+            .nav-container {
+                justify-content: center;
+                gap: 15px;
+                padding: 0 15px;
+            }
+            .nav-link {
+                padding: 10px 0;
+                font-size: 14px;
+            }
+            .container {
+                padding: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .stat-number {
+                font-size: 28px;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+            table {
+                min-width: 500px;
+                font-size: 12px;
+            }
+            th, td {
+                padding: 8px;
+            }
+            .btn {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            .form-card {
+                padding: 15px;
+            }
+            .footer {
+                padding: 15px;
+                font-size: 12px;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🏭</div>
+                <div class="logo-text">
+                    <h1>ПАО «Газпром»</h1>
+                    <p>Админ-панель ВТД</p>
+                </div>
+            </div>
+            <div>
+                <span>👤 {{ current_user.username }}</span>
+                <a href="/" class="btn" style="background: #27ae60; margin-left: 15px;">← На сайт</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="nav">
+        <div class="nav-container">
+            <a href="/admin-panel" class="nav-link active">📊 Админ-панель</a>
+            <a href="/" class="nav-link">🏠 На сайт</a>
+            <a href="/profile" class="nav-link">👤 Профиль</a>
+            <a href="/logout" class="nav-link">🚪 Выход</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>ТРУБОПРОВОДЫ</h3>
+                <div class="stat-number">{{ pipelines_count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>ДЕФЕКТЫ</h3>
+                <div class="stat-number">{{ defects_count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>ПОЛЬЗОВАТЕЛИ</h3>
+                <div class="stat-number">{{ users_count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>КРИТИЧЕСКИЕ</h3>
+                <div class="stat-number">{{ risk_stats.critical }}</div>
+            </div>
+        </div>
+        
+        <div class="form-card">
+            <h3 style="margin-bottom: 20px;">➕ Добавить нового пользователя</h3>
+            <form method="POST" action="/admin-panel/add-user">
+                <div class="form-group">
+                    <label>Логин</label>
+                    <input type="text" name="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Роль</label>
+                    <select name="role" class="form-control">
+                        <option value="viewer">👁️ Наблюдатель (только просмотр)</option>
+                        <option value="user">📋 Пользователь (просмотр + отчёты)</option>
+                        <option value="admin">👑 Администратор (полный доступ)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">➕ Создать пользователя</button>
+            </form>
+        </div>
+        
+        <div class="table-container">
+            <h3 style="padding: 15px; padding-bottom: 0;">👥 Список пользователей</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Логин</th>
+                        <th>Email</th>
+                        <th>Роль</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <span class="role-badge 
+                                {% if user.role == 'admin' %}role-admin
+                                {% elif user.role == 'user' %}role-user
+                                {% else %}role-viewer{% endif %}">
+                                {{ user.role }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/admin-panel/edit-user/{{ user.id }}" class="btn btn-warning">✏️</a>
+                            {% if user.id != current_user.id %}
+                            <a href="/admin-panel/delete-user/{{ user.id }}" class="btn btn-danger" onclick="return confirm('Удалить пользователя?')">🗑️</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2024 ПАО «Газпром» - Система мониторинга внутритрубной диагностики | Админ-панель</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование пользователя</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #1a1a2e; color: #e0e0e0; }
+        .container { max-width: 500px; margin: 100px auto; background: #0d1117; padding: 30px; border-radius: 12px; }
+        h1 { color: #003366; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 15px; background: #1a1a2e; border: 1px solid #30363d; border-radius: 6px; color: #e0e0e0; }
+        button { background: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-cancel { background: #dc3545; margin-left: 10px; text-decoration: none; padding: 10px 20px; border-radius: 6px; color: white; display: inline-block; }
+        a { text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✏️ Редактирование пользователя</h1>
+        <form method="POST">
+            <label>Логин</label>
+            <input type="text" name="username" value="{{ user.username }}" required>
+            
+            <label>Email</label>
+            <input type="email" name="email" value="{{ user.email }}" required>
+            
+            <label>Новый пароль (оставьте пустым, чтобы не менять)</label>
+            <input type="password" name="password" placeholder="Введите новый пароль">
+            
+            <label>Роль</label>
+            <select name="role">
+                <option value="viewer" {% if user.role == 'viewer' %}selected{% endif %}>👁️ Наблюдатель</option>
+                <option value="user" {% if user.role == 'user' %}selected{% endif %}>📋 Пользователь</option>
+                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>👑 Администратор</option>
+            </select>
+            
+            <button type="submit">💾 Сохранить</button>
+            <a href="/admin-panel" class="btn-cancel">❌ Отмена</a>
+        </form>
+    </div>
+</body>
+</html>

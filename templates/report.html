@@ -57,6 +57,7 @@
             padding: 0 30px;
             display: flex;
             gap: 30px;
+            flex-wrap: wrap;
         }
         
         .nav-link {
@@ -87,6 +88,7 @@
             justify-content: flex-end;
             gap: 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
         }
         
         .btn {
@@ -175,6 +177,8 @@
             margin-top: 30px;
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
         }
         .signature-line { margin-top: 40px; width: 250px; border-top: 1px solid #333; text-align: center; padding-top: 5px; }
         
@@ -192,6 +196,85 @@
             .header, .nav, .action-bar, .footer { display: none; }
             .report-container { padding: 20px; box-shadow: none; }
             .risk-critical, .risk-high, .risk-medium, .risk-low { print-color-adjust: exact; }
+        }
+        
+        /* ========== МОБИЛЬНАЯ АДАПТАЦИЯ ========== */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            .logo { justify-content: center; }
+            .nav-container {
+                justify-content: center;
+                gap: 15px;
+                padding: 0 15px;
+            }
+            .nav-link {
+                padding: 10px 0;
+                font-size: 14px;
+            }
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn {
+                text-align: center;
+                justify-content: center;
+            }
+            .report-container {
+                padding: 20px;
+            }
+            .report-header h1 {
+                font-size: 20px;
+            }
+            .report-header h2 {
+                font-size: 16px;
+            }
+            .report-meta {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .summary-value {
+                font-size: 22px;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+            table {
+                min-width: 600px;
+                font-size: 12px;
+            }
+            th, td {
+                padding: 8px;
+            }
+            .signature {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            .signature-line {
+                width: 100%;
+            }
+            .container {
+                padding: 15px;
+            }
+            .footer {
+                padding: 15px;
+                font-size: 12px;
+            }
+        }
+        
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -219,6 +302,7 @@
             <a href="/" class="nav-link">📊 Главная</a>
             <a href="/defects" class="nav-link">🔍 Дефекты</a>
             <a href="/report" class="nav-link active">📄 Отчеты</a>
+            <a href="/profile" class="nav-link">👤 Профиль</a>
             <a href="/logout" class="nav-link" style="margin-left: auto;">🚪 Выход</a>
         </div>
     </div>
@@ -226,6 +310,7 @@
     <div class="container">
         <div class="action-bar no-print">
             <button onclick="window.print()" class="btn btn-primary">🖨 Печать отчета</button>
+            <a href="/export/excel" class="btn btn-success">📊 Экспорт в Excel</a>
         </div>
         
         <div class="report-container" id="reportContent">
